@@ -7,6 +7,7 @@ class SearchView extends GetView<SearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Container(
@@ -27,7 +28,7 @@ class SearchView extends GetView<SearchController> {
                 left: 25,
                 top: 50,
                 right: 25,
-                bottom: 20,
+                bottom: 10,
               ),
               child: Column(
                 children: [
@@ -132,7 +133,83 @@ class SearchView extends GetView<SearchController> {
               ),
             ),
           ),
+          Obx(
+            () {
+              if (controller.placePredictionsList.isNotEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: ListView.separated(
+                    itemBuilder: (ctx, i) {
+                      return InkWell(
+                        onTap: () {
+                          controller.findPlaceDetails(
+                            controller.placePredictionsList[i].placeId!,
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Icon(Icons.add_location),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        controller.placePredictionsList[i]
+                                            .structuredFormatting!.mainText!,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        controller
+                                            .placePredictionsList[i]
+                                            .structuredFormatting!
+                                            .secondaryText!,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      );
+                    },
+                    separatorBuilder: (ctx, i) => const Divider(),
+                    itemCount: controller.placePredictionsList.length,
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
         ],
+      ),
+      bottomNavigationBar: InkWell(
+        onTap: () {
+          controller.findDirections();
+        },
+        child: Container(
+          width: double.infinity,
+          height: 50,
+          color: Colors.red,
+        ),
       ),
     );
   }

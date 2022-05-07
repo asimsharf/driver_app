@@ -10,6 +10,5 @@
 
 8- get generate model on [page]
 9- get generate model on [page] from [api]
-
 10- get generate model on [page] with [assets/models]
 11- get generate locales assets/locales

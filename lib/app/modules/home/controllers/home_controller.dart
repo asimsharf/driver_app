@@ -7,11 +7,11 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeController extends GetxController {
-  final Completer<GoogleMapController> completerGmc = Completer();
+  Completer<GoogleMapController> completerGmc = Completer();
 
   late GoogleMapController googleMc;
 
-  static const CameraPosition kGooglePlex = CameraPosition(
+  CameraPosition kGooglePlex = const CameraPosition(
     target: LatLng(24.6812168, 46.7380791),
     zoom: 14.4746,
   );
@@ -21,6 +21,14 @@ class HomeController extends GetxController {
   var geoLocator = Geolocator();
 
   double bottomPadding = 0;
+
+  set setBottomPadding(double padding) {
+    bottomPadding = padding;
+  }
+
+  var formattedAddress = "".obs;
+  var lat = 0.0.obs;
+  var lng = 0.0.obs;
 
   void locatePosition() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -34,7 +42,12 @@ class HomeController extends GetxController {
     googleMc.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
     HomeProvider().coordinateFromAddress(position).then((address) {
-      dev.log(address, name: 'home_provider_address');
+      dev.log(address.status!, name: 'home_address');
+      if (address.status == 'OK') {
+        formattedAddress.value = address.results![0].formattedAddress!;
+        lat.value = address.results![0].geometry!.location!.lat!;
+        lng.value = address.results![0].geometry!.location!.lng!;
+      }
     });
   }
 }
