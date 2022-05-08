@@ -68,9 +68,9 @@ class LoginView extends GetView<LoginController> {
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 10),
-                  RaisedButton(
-                    color: Colors.yellow,
-                    textColor: Colors.white,
+                  ElevatedButton(
+                    // color: Colors.yellow,
+                    // textColor: Colors.white,
                     onPressed: () {
                       controller.validation(context);
                     },
@@ -86,14 +86,14 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(24),
+                    // ),
                   ),
                 ],
               ),
             ),
-            FlatButton(
+            ElevatedButton(
               onPressed: () {
                 Get.toNamed(Routes.REGISTER);
               },

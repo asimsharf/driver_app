@@ -102,9 +102,9 @@ class RegisterView extends GetView<RegisterController> {
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 10),
-                  RaisedButton(
-                    color: Colors.yellow,
-                    textColor: Colors.white,
+                  ElevatedButton(
+                    // color: Colors.yellow,
+                    // textColor: Colors.white,
                     onPressed: () => controller.validation(context),
                     child: const SizedBox(
                       height: 50,
@@ -118,14 +118,14 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                       ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(24),
+                    // ),
                   ),
                 ],
               ),
             ),
-            FlatButton(
+            ElevatedButton(
               onPressed: () {
                 Get.toNamed(Routes.LOGIN);
               },
