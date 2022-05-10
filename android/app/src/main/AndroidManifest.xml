@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.driver">
-<!--   map_api_key_replacement-->
+<!--   my_map_api_key_over_here-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -38,7 +38,7 @@
             android:value="2" />
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="map_api_key_replacement"/>
+            android:value="my_map_api_key_over_here"/>
 
     </application>
 </manifest>

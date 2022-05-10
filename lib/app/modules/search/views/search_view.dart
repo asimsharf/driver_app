@@ -171,7 +171,8 @@ class SearchView extends GetView<SearchController> {
                                         controller
                                             .placePredictionsList[i]
                                             .structuredFormatting!
-                                            .secondaryText!,
+                                            .secondaryText!
+                                            .toString(),
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontSize: 12,
@@ -200,16 +201,6 @@ class SearchView extends GetView<SearchController> {
             },
           ),
         ],
-      ),
-      bottomNavigationBar: InkWell(
-        onTap: () {
-          controller.findDirections();
-        },
-        child: Container(
-          width: double.infinity,
-          height: 50,
-          color: Colors.red,
-        ),
       ),
     );
   }

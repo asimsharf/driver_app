@@ -9,12 +9,14 @@ class Coordinate {
     plusCode = json['plus_code'] != null
         ? PlusCode?.fromJson(json['plus_code'])
         : null;
+
     if (json['results'] != null) {
       results = <Results>[];
       json['results'].forEach((v) {
         results?.add(Results.fromJson(v));
       });
     }
+
     status = json['status'];
   }
 
@@ -55,16 +57,18 @@ class Results {
   String? formattedAddress;
   Geometry? geometry;
   String? placeId;
+  List<dynamic>? types;
   PlusCode? plusCode;
-  List<String>? types;
+  List<dynamic>? postcodeLocalities;
 
   Results(
       {this.addressComponents,
       this.formattedAddress,
       this.geometry,
       this.placeId,
+      this.types,
       this.plusCode,
-      this.types});
+      this.postcodeLocalities});
 
   Results.fromJson(Map<String, dynamic> json) {
     if (json['address_components'] != null) {
@@ -77,10 +81,11 @@ class Results {
     geometry =
         json['geometry'] != null ? Geometry?.fromJson(json['geometry']) : null;
     placeId = json['place_id'];
+    types = json['types'];
     plusCode = json['plus_code'] != null
         ? PlusCode?.fromJson(json['plus_code'])
         : null;
-    types = json['types'].cast<String>();
+    postcodeLocalities = json['postcode_localities'];
   }
 
   Map<String, dynamic> toJson() {
@@ -94,10 +99,11 @@ class Results {
       data['geometry'] = geometry?.toJson();
     }
     data['place_id'] = placeId;
+    data['types'] = types;
     if (plusCode != null) {
       data['plus_code'] = plusCode?.toJson();
     }
-    data['types'] = types;
+    data['postcode_localities'] = postcodeLocalities;
     return data;
   }
 }
@@ -105,14 +111,14 @@ class Results {
 class AddressComponents {
   String? longName;
   String? shortName;
-  List<String>? types;
+  List<dynamic>? types;
 
   AddressComponents({this.longName, this.shortName, this.types});
 
   AddressComponents.fromJson(Map<String, dynamic> json) {
     longName = json['long_name'];
     shortName = json['short_name'];
-    types = json['types'].cast<String>();
+    types = json['types'];
   }
 
   Map<String, dynamic> toJson() {
@@ -125,24 +131,27 @@ class AddressComponents {
 }
 
 class Geometry {
-  Location? location;
+  Bounds? bounds;
+  Northeast? location;
   String? locationType;
-  Viewport? viewport;
-  Viewport? bounds;
+  Bounds? viewport;
 
-  Geometry({this.location, this.locationType, this.viewport, this.bounds});
+  Geometry({this.bounds, this.location, this.locationType, this.viewport});
 
   Geometry.fromJson(Map<String, dynamic> json) {
+    bounds = json['bounds'] != null ? Bounds?.fromJson(json['bounds']) : null;
     location =
-        json['location'] != null ? Location?.fromJson(json['location']) : null;
+        json['location'] != null ? Northeast?.fromJson(json['location']) : null;
     locationType = json['location_type'];
     viewport =
-        json['viewport'] != null ? Viewport?.fromJson(json['viewport']) : null;
-    bounds = json['bounds'] != null ? Viewport?.fromJson(json['bounds']) : null;
+        json['viewport'] != null ? Bounds?.fromJson(json['viewport']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
+    if (bounds != null) {
+      data['bounds'] = bounds?.toJson();
+    }
     if (location != null) {
       data['location'] = location?.toJson();
     }
@@ -150,44 +159,22 @@ class Geometry {
     if (viewport != null) {
       data['viewport'] = viewport?.toJson();
     }
-    if (bounds != null) {
-      data['bounds'] = bounds?.toJson();
-    }
     return data;
   }
 }
 
-class Location {
-  double? lat;
-  double? lng;
+class Bounds {
+  Northeast? northeast;
+  Northeast? southwest;
 
-  Location({this.lat, this.lng});
+  Bounds({this.northeast, this.southwest});
 
-  Location.fromJson(Map<String, dynamic> json) {
-    lat = json['lat'];
-    lng = json['lng'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['lat'] = lat;
-    data['lng'] = lng;
-    return data;
-  }
-}
-
-class Viewport {
-  Location? northeast;
-  Location? southwest;
-
-  Viewport({this.northeast, this.southwest});
-
-  Viewport.fromJson(Map<String, dynamic> json) {
+  Bounds.fromJson(Map<String, dynamic> json) {
     northeast = json['northeast'] != null
-        ? Location?.fromJson(json['northeast'])
+        ? Northeast?.fromJson(json['northeast'])
         : null;
     southwest = json['southwest'] != null
-        ? Location?.fromJson(json['southwest'])
+        ? Northeast?.fromJson(json['southwest'])
         : null;
   }
 
@@ -199,6 +186,25 @@ class Viewport {
     if (southwest != null) {
       data['southwest'] = southwest?.toJson();
     }
+    return data;
+  }
+}
+
+class Northeast {
+  double? lat;
+  double? lng;
+
+  Northeast({this.lat, this.lng});
+
+  Northeast.fromJson(Map<String, dynamic> json) {
+    lat = json['lat'];
+    lng = json['lng'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['lat'] = lat;
+    data['lng'] = lng;
     return data;
   }
 }

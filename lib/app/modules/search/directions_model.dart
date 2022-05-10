@@ -100,6 +100,7 @@ class Routes {
       data['overview_polyline'] = overviewPolyline?.toJson();
     }
     data['summary'] = summary;
+
     return data;
   }
 }
@@ -158,8 +159,6 @@ class Legs {
   String? startAddress;
   Northeast? startLocation;
   List<Steps>? steps;
-  List<Null>? trafficSpeedEntry;
-  List<Null>? viaWaypoint;
 
   Legs({
     this.distance,

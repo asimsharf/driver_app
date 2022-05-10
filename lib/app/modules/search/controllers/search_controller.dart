@@ -3,15 +3,11 @@ import 'dart:developer' as dev;
 import 'package:driver/app/modules/search/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../home/controllers/home_controller.dart';
-import '../directions_model.dart';
 import '../place_predictions_model.dart';
 
 class SearchController extends GetxController {
-  var findHome = Get.find<HomeController>();
-
   TextEditingController txtPick = TextEditingController();
   var txtPickLat = 0.0.obs;
   var txtPickLng = 0.0.obs;
@@ -22,9 +18,9 @@ class SearchController extends GetxController {
 
   @override
   void onInit() {
-    txtPick.text = findHome.formattedAddress.value;
-    txtPickLat.value = findHome.lat.value;
-    txtPickLng.value = findHome.lng.value;
+    txtPick.text = Get.find<HomeController>().formattedAddress.value;
+    txtPickLat.value = Get.find<HomeController>().lat.value;
+    txtPickLng.value = Get.find<HomeController>().lng.value;
     super.onInit();
   }
 
@@ -55,51 +51,15 @@ class SearchController extends GetxController {
           txtDropLat.value = place.result!.geometry!.location!.lat!;
           txtDropLng.value = place.result!.geometry!.location!.lng!;
         }
-      }).then((value) => findDirections());
+      }).then(
+        (value) => Get.find<HomeController>().findDirections(
+          txtPickLat,
+          txtPickLng,
+          txtDropLat,
+          txtDropLng,
+        ),
+      );
     }
-    update();
-  }
-
-  var routes = List<Routes>.empty(growable: true).obs;
-
-  void findDirections() async {
-    SearchProvider()
-        .findDirections(LatLng(txtPickLat.value, txtPickLng.value),
-            LatLng(txtDropLat.value, txtDropLng.value))
-        .then((place) {
-      dev.log(place.status!, name: 'find_directions');
-      if (place.status == 'OK') {
-        for (var e in place.routes!) {
-          routes.add(e);
-        }
-        Map direction = {
-          "legs": {
-            "distance": {
-              "text": routes.first.legs!.first.distance!.text,
-              "value": routes.first.legs!.first.distance!.value
-            },
-            "duration": {
-              "text": routes.first.legs!.first.duration!.text,
-              "value": routes.first.legs!.first.duration!.value
-            },
-            "end_address": routes.first.legs!.first.endAddress,
-            "end_location": {
-              "lat": routes.first.legs!.first.endLocation!.lat,
-              "lng": routes.first.legs!.first.endLocation!.lng,
-            },
-            "start_address": routes.first.legs!.first.startAddress,
-            "start_location": {
-              "lat": routes.first.legs!.first.startLocation!.lat,
-              "lng": routes.first.legs!.first.startLocation!.lat
-            },
-          },
-          "overview_polyline": {
-            "points": routes.first.overviewPolyline!.points,
-          }
-        };
-        dev.log("$direction", name: "direction");
-      }
-    });
     update();
   }
 }
