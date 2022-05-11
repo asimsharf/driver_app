@@ -46,9 +46,9 @@ class HomeView extends GetView<HomeController> {
               myLocationEnabled: true,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: true,
-              markers: controller.markersSet,
+              markers: Set<Marker>.of(controller.markersSet),
               circles: Set<Circle>.of(controller.circlesSet),
-              polylines: controller.polyLineSet,
+              polylines: Set<Polyline>.of(controller.polyLineSet),
               initialCameraPosition: controller.kGooglePlex,
               onMapCreated: (GoogleMapController controllers) {
                 controller.completerGmc.complete(controllers);
@@ -143,19 +143,21 @@ class HomeView extends GetView<HomeController> {
                             color: Colors.grey,
                           ),
                           const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("Add Home"),
-                              const SizedBox(height: 4),
-                              Text(
-                                controller.formattedAddress.value,
-                                style: const TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 12,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Add Home"),
+                                const SizedBox(height: 4),
+                                Text(
+                                  controller.formattedAddress.value,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),

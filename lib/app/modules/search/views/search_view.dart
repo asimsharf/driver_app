@@ -168,10 +168,8 @@ class SearchView extends GetView<SearchController> {
                                       ),
                                       const SizedBox(width: 10),
                                       Text(
-                                        controller
-                                            .placePredictionsList[i]
-                                            .structuredFormatting!
-                                            .secondaryText!
+                                        controller.placePredictionsList[i]
+                                            .structuredFormatting!.secondaryText
                                             .toString(),
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(

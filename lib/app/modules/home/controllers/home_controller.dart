@@ -105,17 +105,15 @@ class HomeController extends GetxController {
 
   var routes = List<poly.Routes>.empty(growable: true).obs;
 
-  var pLineCoordinates = List<LatLng>.empty(growable: true).obs;
+  RxList<LatLng> pLineCoordinates = List<LatLng>.empty(growable: true).obs;
 
-  // var markersSet = List<Marker>.empty(growable: true).obs;
+  RxList<Marker> markersSet = List<Marker>.empty(growable: true).obs;
 
-  Set<Marker> markersSet = {};
+  RxList<Polyline> polyLineSet = List<Polyline>.empty(growable: true).obs;
 
-  // var polyLineSet = List<Polyline>.empty(growable: true).obs;
+  // Set<Polyline> polyLines = {};
 
-  Set<Polyline> polyLineSet = {};
-
-  var circlesSet = List<Circle>.empty(growable: true).obs;
+  RxList<Circle> circlesSet = List<Circle>.empty(growable: true).obs;
 
   void findDirections(txtPickLat, txtPickLng, txtDropLat, txtDropLng) async {
     HomeProvider()
@@ -210,9 +208,52 @@ class HomeController extends GetxController {
             northeast: dropOffLatLng,
           );
         }
+
         googleMc.animateCamera(
           CameraUpdate.newLatLngBounds(latLngBounds, 70),
         );
+
+        Marker pickUpLocMarker = Marker(
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+          infoWindow: InfoWindow(
+            title: routes.first.legs!.first.startAddress,
+            snippet: "pickUp Location",
+          ),
+          position: pickUpLatLng,
+          markerId: const MarkerId("pickUpId"),
+        );
+        Marker dropOffUpLocMarker = Marker(
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(
+            title: routes.first.legs!.first.endAddress,
+            snippet: "DropOff Location",
+          ),
+          position: dropOffLatLng,
+          markerId: const MarkerId("dropOffId"),
+        );
+        markersSet.add(pickUpLocMarker);
+        markersSet.add(dropOffUpLocMarker);
+
+        Circle pickUpLocCircle = Circle(
+          fillColor: Colors.yellow,
+          center: pickUpLatLng,
+          radius: 12,
+          strokeWidth: 4,
+          strokeColor: Colors.yellowAccent,
+          circleId: const CircleId("pickUpId"),
+        );
+        Circle dropOffUpLocCircle = Circle(
+          fillColor: Colors.purple,
+          center: dropOffLatLng,
+          radius: 12,
+          strokeWidth: 4,
+          strokeColor: Colors.purple,
+          circleId: const CircleId("dropOffId"),
+        );
+        circlesSet.add(pickUpLocCircle);
+        circlesSet.add(dropOffUpLocCircle);
+
         Get.back();
       }
     });
