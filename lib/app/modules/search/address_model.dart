@@ -39,7 +39,7 @@ class Result {
   double? rating;
   String? reference;
   List<Reviews>? reviews;
-  List<String>? types;
+  List<dynamic>? types;
   String? url;
   int? userRatingsTotal;
   int? utcOffset;
@@ -111,7 +111,7 @@ class Result {
         reviews?.add(Reviews.fromJson(v));
       });
     }
-    types = json['types'].cast<String>();
+    types = json['types'];
     url = json['url'];
     userRatingsTotal = json['user_ratings_total'];
     utcOffset = json['utc_offset'];
@@ -165,14 +165,14 @@ class Result {
 class AddressComponents {
   String? longName;
   String? shortName;
-  List<String>? types;
+  List<dynamic>? types;
 
   AddressComponents({this.longName, this.shortName, this.types});
 
   AddressComponents.fromJson(Map<String, dynamic> json) {
     longName = json['long_name'];
     shortName = json['short_name'];
-    types = json['types'].cast<String>();
+    types = json['types'];
   }
 
   Map<String, dynamic> toJson() {
@@ -258,7 +258,7 @@ class Viewport {
 class OpeningHours {
   bool? openNow;
   List<Periods>? periods;
-  List<String>? weekdayText;
+  List<dynamic>? weekdayText;
 
   OpeningHours({this.openNow, this.periods, this.weekdayText});
 
@@ -270,7 +270,7 @@ class OpeningHours {
         periods?.add(Periods.fromJson(v));
       });
     }
-    weekdayText = json['weekday_text'].cast<String>();
+    weekdayText = json['weekday_text'];
   }
 
   Map<String, dynamic> toJson() {
@@ -328,7 +328,7 @@ class Close {
 
 class Photos {
   int? height;
-  List<String>? htmlAttributions;
+  List<dynamic>? htmlAttributions;
   String? photoReference;
   int? width;
 
@@ -336,7 +336,7 @@ class Photos {
 
   Photos.fromJson(Map<String, dynamic> json) {
     height = json['height'];
-    htmlAttributions = json['html_attributions'].cast<String>();
+    htmlAttributions = json['html_attributions'];
     photoReference = json['photo_reference'];
     width = json['width'];
   }

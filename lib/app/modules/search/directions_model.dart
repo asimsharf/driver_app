@@ -38,14 +38,14 @@ class Directions {
 class GeocodedWaypoints {
   String? geocoderStatus;
   String? placeId;
-  List<String>? types;
+  List<dynamic>? types;
 
   GeocodedWaypoints({this.geocoderStatus, this.placeId, this.types});
 
   GeocodedWaypoints.fromJson(Map<String, dynamic> json) {
     geocoderStatus = json['geocoder_status'];
     placeId = json['place_id'];
-    types = json['types'].cast<String>();
+    types = json['types'];
   }
 
   Map<String, dynamic> toJson() {

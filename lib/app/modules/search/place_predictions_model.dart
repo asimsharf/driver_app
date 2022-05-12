@@ -31,7 +31,7 @@ class Predictions {
   String? reference;
   StructuredFormatting? structuredFormatting;
   List<Terms>? terms;
-  List<String>? types;
+  List<dynamic>? types;
 
   Predictions(
       {this.description,
@@ -61,7 +61,7 @@ class Predictions {
         terms?.add(Terms.fromJson(v));
       });
     }
-    types = json['types'].cast<String>();
+    types = json['types'];
   }
 
   Map<String, dynamic> toJson() {

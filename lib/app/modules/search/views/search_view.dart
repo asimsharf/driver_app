@@ -11,7 +11,7 @@ class SearchView extends GetView<SearchController> {
       body: Column(
         children: [
           Container(
-            height: 215,
+            height: 230,
             decoration: const BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -43,9 +43,8 @@ class SearchView extends GetView<SearchController> {
                       ),
                       const Center(
                         child: Text(
-                          "Set Drop off",
+                          "عنوان الوصول",
                           style: TextStyle(
-                            fontFamily: 'Brand Bold',
                             fontSize: 18,
                           ),
                         ),
@@ -72,7 +71,7 @@ class SearchView extends GetView<SearchController> {
                             child: TextField(
                               controller: controller.txtPick,
                               decoration: InputDecoration(
-                                hintText: "PickUp location",
+                                hintText: "عنوان الأقلاع",
                                 fillColor: Colors.grey[400],
                                 filled: true,
                                 border: InputBorder.none,
@@ -112,7 +111,7 @@ class SearchView extends GetView<SearchController> {
                                 controller.findPlace(val);
                               },
                               decoration: InputDecoration(
-                                hintText: "Where to?",
+                                hintText: "الى أين؟",
                                 fillColor: Colors.grey[400],
                                 filled: true,
                                 border: InputBorder.none,

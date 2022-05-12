@@ -9,7 +9,6 @@ import '../coordinate_model.dart';
 class HomeProvider extends GetConnect {
   Future<Coordinate> coordinateFromAddress(Position position) async {
     try {
-      print(Config().coordinateFromAddress(position));
       final res = await get(Config().coordinateFromAddress(position));
 
       if (res.status.hasError) {

@@ -19,6 +19,8 @@ dependencies:
   http: ^0.13.4
   location: ^4.3.0
   flutter_polyline_points: ^1.0.0
+  flutter_easyloading: ^3.0.3
+  flutter_spinkit: ^5.1.0
 
 dev_dependencies: 
   flutter_lints: ^1.0.0
@@ -41,14 +43,10 @@ flutter:
     - assets/images/redmarker.png
     - assets/images/taxi.png
     - assets/images/user_icon.png
-  fonts: 
-    - family: Signatra
-      fonts: 
-        - asset: assets/fonts/Signatra.ttf
-    - family: Brand Bold
-      fonts: 
-        - asset: assets/fonts/bolt-regular.ttf
-    - family: Bolt Semibold
-      fonts: 
-        - asset: assets/fonts/bolt-semibold.ttf
+
+
+  fonts:
+    - family: Changa Regular
+      fonts:
+        - asset: assets/fonts/changa_regular.ttf
 

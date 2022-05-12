@@ -24,7 +24,6 @@ class RegisterView extends GetView<RegisterController> {
               "Register as a Rider",
               style: TextStyle(
                 fontSize: 24,
-                fontFamily: 'Brand Bold',
               ),
               textAlign: TextAlign.center,
             ),
@@ -113,7 +112,6 @@ class RegisterView extends GetView<RegisterController> {
                           "Register",
                           style: TextStyle(
                             fontSize: 18,
-                            fontFamily: 'Brand Bold',
                           ),
                         ),
                       ),

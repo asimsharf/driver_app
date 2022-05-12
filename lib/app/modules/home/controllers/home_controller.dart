@@ -11,11 +11,18 @@ import 'package:location/location.dart' as location;
 
 import '../../search/directions_model.dart' as poly;
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with GetTickerProviderStateMixin {
+  RxBool isLoading = true.obs;
+
+  final Duration duration = const Duration(milliseconds: 160);
+
+  late AnimationController animationController;
+
   @override
   void onInit() {
     getLocation();
     super.onInit();
+    animationController = AnimationController(vsync: this, duration: duration);
   }
 
   location.Location locations = location.Location();
@@ -69,41 +76,49 @@ class HomeController extends GetxController {
 
   var geoLocator = Geolocator();
 
-  double bottomPadding = 0;
+  RxDouble bottomPadding = 0.0.obs;
 
   set setBottomPadding(double padding) {
-    bottomPadding = padding;
+    bottomPadding.value = padding;
   }
 
   var formattedAddress = "".obs;
-  var lat = 0.0.obs;
-  var lng = 0.0.obs;
+  RxDouble lat = 0.0.obs;
+  RxDouble lng = 0.0.obs;
 
-  void locatePosition() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    currentPosition = position;
-    CameraPosition cameraPosition = CameraPosition(
-      target: LatLng(position.latitude, position.longitude),
-      zoom: 14,
-    );
+  locatePosition() async {
+    try {
+      isLoading(true);
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      currentPosition = position;
+      CameraPosition cameraPosition = CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 14,
+      );
 
-    googleMc.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+      googleMc.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    HomeProvider().coordinateFromAddress(position).then((address) {
-      dev.log(address.status!, name: 'home_address');
+      HomeProvider().coordinateFromAddress(position).then((address) {
+        dev.log(address.status!, name: 'home_address');
 
-      if (address.status == 'OK') {
-        formattedAddress.value = address.results![0].formattedAddress!;
-        lat.value = address.results![0].geometry!.location!.lat!;
-        lng.value = address.results![0].geometry!.location!.lng!;
-      }
-    });
+        if (address.status == 'OK') {
+          formattedAddress.value = address.results![0].formattedAddress!;
+          lat.value = address.results![0].geometry!.location!.lat!;
+          lng.value = address.results![0].geometry!.location!.lng!;
+        }
+      });
+    } catch (e, s) {
+      dev.log("$e", name: "home_controller_catch_exception_e");
+      dev.log("$s", name: "home_controller_catch_exception_s");
+    } finally {
+      isLoading(false);
+    }
     update();
   }
 
-  var routes = List<poly.Routes>.empty(growable: true).obs;
+  RxList<poly.Routes> routes = List<poly.Routes>.empty(growable: true).obs;
 
   RxList<LatLng> pLineCoordinates = List<LatLng>.empty(growable: true).obs;
 
@@ -111,152 +126,192 @@ class HomeController extends GetxController {
 
   RxList<Polyline> polyLineSet = List<Polyline>.empty(growable: true).obs;
 
-  // Set<Polyline> polyLines = {};
-
   RxList<Circle> circlesSet = List<Circle>.empty(growable: true).obs;
 
-  void findDirections(txtPickLat, txtPickLng, txtDropLat, txtDropLng) async {
-    HomeProvider()
-        .findDirections(LatLng(txtPickLat.value, txtPickLng.value),
-            LatLng(txtDropLat.value, txtDropLng.value))
-        .then((place) {
-      dev.log(place.status!, name: 'find_directions');
+  RxString distanceText = "".obs;
+  RxInt distanceValue = 0.obs;
+  RxString durationText = "".obs;
+  RxInt durationValue = 0.obs;
 
-      if (place.status == 'OK') {
-        for (var e in place.routes!) {
-          routes.add(e);
-        }
-        Map direction = {
-          "legs": {
-            "distance": {
-              "text": routes.first.legs!.first.distance!.text,
-              "value": routes.first.legs!.first.distance!.value
-            },
-            "duration": {
-              "text": routes.first.legs!.first.duration!.text,
-              "value": routes.first.legs!.first.duration!.value
-            },
-            "end_address": routes.first.legs!.first.endAddress,
-            "end_location": {
-              "lat": routes.first.legs!.first.endLocation!.lat,
-              "lng": routes.first.legs!.first.endLocation!.lng,
-            },
-            "start_address": routes.first.legs!.first.startAddress,
-            "start_location": {
-              "lat": routes.first.legs!.first.startLocation!.lat,
-              "lng": routes.first.legs!.first.startLocation!.lat
-            },
-          },
-          "overview_polyline": {
-            "points": routes.first.overviewPolyline!.points,
+  findDirections(pLat, pLng, dLat, dLng) async {
+    try {
+      isLoading(true);
+      HomeProvider()
+          .findDirections(
+        LatLng(pLat.value, pLng.value),
+        LatLng(dLat.value, dLng.value),
+      )
+          .then((place) {
+        routes.clear();
+        if (place.status == 'OK') {
+          for (var e in place.routes!) {
+            routes.add(e);
           }
-        };
-        dev.log("$direction", name: "direction");
 
-        PolylinePoints polylinePoints = PolylinePoints();
-        List<PointLatLng> decodedResult = polylinePoints.decodePolyline(
-          routes.first.overviewPolyline!.points!,
-        );
+          distanceText.value = routes.first.legs!.first.distance!.text!;
+          distanceValue.value = routes.first.legs!.first.distance!.value!;
+          durationText.value = routes.first.legs!.first.duration!.text!;
+          durationValue.value = routes.first.legs!.first.duration!.value!;
 
-        pLineCoordinates.clear();
+          Map direction = {
+            "legs": {
+              "distance": {
+                "text": routes.first.legs!.first.distance!.text,
+                "value": routes.first.legs!.first.distance!.value
+              },
+              "duration": {
+                "text": routes.first.legs!.first.duration!.text,
+                "value": routes.first.legs!.first.duration!.value
+              },
+              "end_address": routes.first.legs!.first.endAddress,
+              "end_location": {
+                "lat": routes.first.legs!.first.endLocation!.lat,
+                "lng": routes.first.legs!.first.endLocation!.lng,
+              },
+              "start_address": routes.first.legs!.first.startAddress,
+              "start_location": {
+                "lat": routes.first.legs!.first.startLocation!.lat,
+                "lng": routes.first.legs!.first.startLocation!.lat
+              },
+            },
+            "overview_polyline": {
+              "points": routes.first.overviewPolyline!.points,
+            }
+          };
+          dev.log("$direction", name: "direction");
+          PolylinePoints polylinePoints = PolylinePoints();
+          List<PointLatLng> decodedResult = polylinePoints.decodePolyline(
+            routes.first.overviewPolyline!.points!,
+          );
 
-        if (decodedResult.isNotEmpty) {
-          for (var p in decodedResult) {
-            pLineCoordinates.add(LatLng(p.latitude, p.longitude));
+          pLineCoordinates.clear();
+
+          if (decodedResult.isNotEmpty) {
+            for (var p in decodedResult) {
+              pLineCoordinates.add(LatLng(p.latitude, p.longitude));
+            }
           }
+
+          polyLineSet.clear();
+
+          Polyline polyline = Polyline(
+            color: const Color(0xFFBF202E),
+            polylineId: const PolylineId('POLYLINEID'),
+            jointType: JointType.round,
+            points: pLineCoordinates,
+            width: 5,
+            startCap: Cap.roundCap,
+            endCap: Cap.roundCap,
+            geodesic: true,
+          );
+
+          polyLineSet.add(polyline);
+
+          LatLngBounds latLngBounds;
+
+          var pickUpLatLng = LatLng(pLat.value, pLng.value);
+          var dropOffLatLng = LatLng(dLat.value, dLng.value);
+
+          if (pickUpLatLng.latitude > dropOffLatLng.latitude &&
+              pickUpLatLng.longitude > dropOffLatLng.longitude) {
+            latLngBounds = LatLngBounds(
+              southwest: dropOffLatLng,
+              northeast: pickUpLatLng,
+            );
+          } else if (pickUpLatLng.longitude > dropOffLatLng.longitude) {
+            latLngBounds = LatLngBounds(
+              southwest: LatLng(pickUpLatLng.latitude, dropOffLatLng.longitude),
+              northeast: LatLng(dropOffLatLng.latitude, pickUpLatLng.longitude),
+            );
+          } else if (pickUpLatLng.longitude > dropOffLatLng.longitude) {
+            latLngBounds = LatLngBounds(
+              southwest: LatLng(dropOffLatLng.latitude, pickUpLatLng.longitude),
+              northeast: LatLng(dropOffLatLng.latitude, pickUpLatLng.longitude),
+            );
+          } else {
+            latLngBounds = LatLngBounds(
+              southwest: pickUpLatLng,
+              northeast: dropOffLatLng,
+            );
+          }
+
+          googleMc.animateCamera(
+            CameraUpdate.newLatLngBounds(latLngBounds, 70),
+          );
+
+          Marker pickUpLocMarker = Marker(
+            icon: BitmapDescriptor.defaultMarker,
+            infoWindow: InfoWindow(
+              title: routes.first.legs!.first.startAddress,
+              snippet: "موقع الإقلاع",
+            ),
+            position: pickUpLatLng,
+            markerId: const MarkerId("PICKUPID"),
+          );
+
+          Marker dropOffUpLocMarker = Marker(
+            icon: BitmapDescriptor.defaultMarker,
+            infoWindow: InfoWindow(
+              title: routes.first.legs!.first.endAddress,
+              snippet: "موقع الوصول",
+            ),
+            position: dropOffLatLng,
+            markerId: const MarkerId("DROOPOFFID"),
+          );
+
+          markersSet.add(pickUpLocMarker);
+          markersSet.add(dropOffUpLocMarker);
+
+          Circle pickUpLocCircle = Circle(
+            fillColor: Colors.black,
+            center: pickUpLatLng,
+            radius: 12,
+            strokeWidth: 4,
+            strokeColor: Colors.black,
+            circleId: const CircleId("PICKUPID"),
+          );
+
+          Circle dropOffUpLocCircle = Circle(
+            fillColor: const Color(0xFFBF202E),
+            center: dropOffLatLng,
+            radius: 12,
+            strokeWidth: 4,
+            strokeColor: const Color(0xFFBF202E),
+            circleId: const CircleId("DROOPOFID"),
+          );
+
+          circlesSet.add(pickUpLocCircle);
+          circlesSet.add(dropOffUpLocCircle);
+          displayRideContainer();
+          calculateFares();
+          Get.back();
         }
+      });
+    } catch (e, s) {
+      dev.log("$e", name: "home_controller_catch_exception_e");
+      dev.log("$s", name: "home_controller_catch_exception_s");
+    } finally {
+      isLoading(false);
+    }
+    update();
+  }
 
-        polyLineSet.clear();
+  RxDouble rideDetailsContainer = 0.0.obs;
+  RxDouble searchContainerHeight = 350.0.obs;
 
-        Polyline polyline = Polyline(
-          color: Colors.red,
-          polylineId: const PolylineId('PolylineID'),
-          jointType: JointType.round,
-          points: pLineCoordinates,
-          width: 5,
-          startCap: Cap.roundCap,
-          endCap: Cap.roundCap,
-          geodesic: true,
-        );
+  void displayRideContainer() async {
+    searchContainerHeight.value = 0;
+    rideDetailsContainer.value = 230;
+    bottomPadding.value = 0;
+    update();
+  }
 
-        polyLineSet.add(polyline);
-
-        LatLngBounds latLngBounds;
-
-        var pickUpLatLng = LatLng(txtPickLat.value, txtPickLng.value);
-        var dropOffLatLng = LatLng(txtDropLat.value, txtDropLng.value);
-
-        if (pickUpLatLng.latitude > dropOffLatLng.latitude &&
-            pickUpLatLng.longitude > dropOffLatLng.longitude) {
-          latLngBounds = LatLngBounds(
-            southwest: dropOffLatLng,
-            northeast: pickUpLatLng,
-          );
-        } else if (pickUpLatLng.longitude > dropOffLatLng.longitude) {
-          latLngBounds = LatLngBounds(
-            southwest: LatLng(pickUpLatLng.latitude, dropOffLatLng.longitude),
-            northeast: LatLng(dropOffLatLng.latitude, pickUpLatLng.longitude),
-          );
-        } else if (pickUpLatLng.longitude > dropOffLatLng.longitude) {
-          latLngBounds = LatLngBounds(
-            southwest: LatLng(dropOffLatLng.latitude, pickUpLatLng.longitude),
-            northeast: LatLng(dropOffLatLng.latitude, pickUpLatLng.longitude),
-          );
-        } else {
-          latLngBounds = LatLngBounds(
-            southwest: pickUpLatLng,
-            northeast: dropOffLatLng,
-          );
-        }
-
-        googleMc.animateCamera(
-          CameraUpdate.newLatLngBounds(latLngBounds, 70),
-        );
-
-        Marker pickUpLocMarker = Marker(
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
-          infoWindow: InfoWindow(
-            title: routes.first.legs!.first.startAddress,
-            snippet: "pickUp Location",
-          ),
-          position: pickUpLatLng,
-          markerId: const MarkerId("pickUpId"),
-        );
-        Marker dropOffUpLocMarker = Marker(
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(
-            title: routes.first.legs!.first.endAddress,
-            snippet: "DropOff Location",
-          ),
-          position: dropOffLatLng,
-          markerId: const MarkerId("dropOffId"),
-        );
-        markersSet.add(pickUpLocMarker);
-        markersSet.add(dropOffUpLocMarker);
-
-        Circle pickUpLocCircle = Circle(
-          fillColor: Colors.yellow,
-          center: pickUpLatLng,
-          radius: 12,
-          strokeWidth: 4,
-          strokeColor: Colors.yellowAccent,
-          circleId: const CircleId("pickUpId"),
-        );
-        Circle dropOffUpLocCircle = Circle(
-          fillColor: Colors.purple,
-          center: dropOffLatLng,
-          radius: 12,
-          strokeWidth: 4,
-          strokeColor: Colors.purple,
-          circleId: const CircleId("dropOffId"),
-        );
-        circlesSet.add(pickUpLocCircle);
-        circlesSet.add(dropOffUpLocCircle);
-
-        Get.back();
-      }
-    });
+  RxDouble totalFareAmount = 0.0.obs;
+  calculateFares() {
+    double timeTraveledFare = (durationValue / 60) * 0.20;
+    double distanceTraveledFare = (distanceValue / 1000) * 0.20;
+    double totalTraveledFare = timeTraveledFare + distanceTraveledFare;
+    totalFareAmount.value = totalTraveledFare * 3.75;
     update();
   }
 }

@@ -24,7 +24,6 @@ class LoginView extends GetView<LoginController> {
               "Login as a Rider",
               style: TextStyle(
                 fontSize: 24,
-                fontFamily: 'Brand Bold',
               ),
               textAlign: TextAlign.center,
             ),
@@ -81,7 +80,6 @@ class LoginView extends GetView<LoginController> {
                           "Login",
                           style: TextStyle(
                             fontSize: 18,
-                            fontFamily: 'Brand Bold',
                           ),
                         ),
                       ),
