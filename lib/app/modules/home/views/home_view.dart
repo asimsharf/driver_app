@@ -348,15 +348,22 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
           ),
-          Positioned(
-            top: 0,
-            left: 15,
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.cancel_outlined,
-                size: 45,
-                color: Color(0xFFBF202E),
+          Obx(
+            () => Visibility(
+              visible: controller.drawerOpen.value,
+              child: Positioned(
+                top: 0,
+                left: 15,
+                child: IconButton(
+                  onPressed: () {
+                    controller.restApp();
+                  },
+                  icon: const Icon(
+                    Icons.cancel_outlined,
+                    size: 45,
+                    color: Color(0xFFBF202E),
+                  ),
+                ),
               ),
             ),
           ),

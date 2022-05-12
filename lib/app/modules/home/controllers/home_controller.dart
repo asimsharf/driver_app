@@ -298,11 +298,13 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
 
   RxDouble rideDetailsContainer = 0.0.obs;
   RxDouble searchContainerHeight = 350.0.obs;
+  RxBool drawerOpen = false.obs;
 
   void displayRideContainer() async {
     searchContainerHeight.value = 0;
     rideDetailsContainer.value = 230;
     bottomPadding.value = 0;
+    drawerOpen.value = true;
     update();
   }
 
@@ -312,6 +314,19 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     double distanceTraveledFare = (distanceValue / 1000) * 0.20;
     double totalTraveledFare = timeTraveledFare + distanceTraveledFare;
     totalFareAmount.value = totalTraveledFare * 3.75;
+    update();
+  }
+
+  restApp() {
+    searchContainerHeight.value = 350;
+    rideDetailsContainer.value = 0;
+    bottomPadding.value = 330;
+    drawerOpen.value = false;
+    polyLineSet.clear();
+    markersSet.clear();
+    circlesSet.clear();
+    pLineCoordinates.clear();
+    locatePosition();
     update();
   }
 }
